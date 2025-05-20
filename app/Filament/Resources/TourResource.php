@@ -10,6 +10,9 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Repeater;
@@ -44,21 +47,100 @@ class TourResource extends Resource
         return $form
             ->schema([
                 //
-                    TextInput::make('name')
-                        ->required()
-                        ->maxLength(255)
-                        ->required()
-                        ->live(onBlur: true) // 👈 triggers updates when leaving the field
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $set('slug', Str::slug($state));
-                        }),
+                    // TextInput::make('name')
+                    //     ->required()
+                    //     ->maxLength(255)
+                    //     ->required()
+                    //     ->live(onBlur: true) // 👈 triggers updates when leaving the field
+                    //     ->afterStateUpdated(function (callable $set, $state) {
+                    //         $set('slug', Str::slug($state));
+                    //     }),
+                    Group::make([
+                    Tabs::make('Translations')
+                    ->tabs([
+                        Tabs\Tab::make('French')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->required()
+                                    ->live(onBlur: true) // 👈 triggers updates when leaving the field
+                                    ->afterStateUpdated(function (callable $set, $state) {
+                                        $set('slug', Str::slug($state));
+                                    }),
+                            Grid::make()
+                              ->columns([
+                                    'sm' => 1,
+                                    'md' => 2, // side by side on medium+ screens
+                                ])
+                               ->schema([
+                                    RichEditor::make('description')
+                                        ->label('Description')
+                                        ->required()
+                                        ->maxLength(65535),
+                                    RichEditor::make('overview')
+                                        ->label('Overview')
+                                        ->required()
+                                        ->maxLength(65535),
+                               ]),
+                            ]),
+                        Tabs\Tab::make('English')
+                            ->schema([
+                                TextInput::make('translations.en.name')
+                                    ->label('Name (EN)')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->required(),
+                            Grid::make()
+                              ->columns([
+                                    'sm' => 1,
+                                    'md' => 2, // side by side on medium+ screens
+                                ])
+                            ->schema([
+                                RichEditor::make('translations.en.description')
+                                    ->label('Description (EN)')
+                                    ->required()
+                                    ->maxLength(65535),
+                                RichEditor::make('translations.en.overview')
+                                    ->label('Overview (EN)')
+                                    ->required()
+                                    ->maxLength(65535),
+                            ]),
+                            ]),
+                        Tabs\Tab::make('Spanish')
+                            ->schema([
+                                TextInput::make('translations.es.name')
+                                    ->label('Name (ES)')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->required(),
+                                Grid::make()
+                              ->columns([
+                                    'sm' => 1,
+                                    'md' => 2, // side by side on medium+ screens
+                                ])
+                                ->schema([
+                                 RichEditor::make('translations.es.description')
+                                    ->label('Description (ES)')
+                                    ->required()
+                                    ->maxLength(65535),
+                                RichEditor::make('translations.es.overview')
+                                    ->label('Overview (ES)')
+                                    ->required()
+                                    ->maxLength(65535),
+                                ]),
+                            ]),
+                    ])
+                     ->columnSpanFull(),
+                ])
+                 ->columnSpanFull(),
                     // TextInput::make('slug')
                     //     ->label('Slug')
                     //     ->required()
                     //     ->unique(ignoreRecord: true) // 👈 this avoids slug conflict on update
                     //     ->maxLength(255),
-                    Toggle::make('is_highlited')
-                        ->inline(false),
+                    // Toggle::make('is_highlited')
+                    //     ->inline(false),
                     Select::make('section_id')
                         ->label('Section')
                         ->options(Section::all()->pluck('name', 'id'))
@@ -99,13 +181,70 @@ class TourResource extends Resource
                         ->maxSize(2048)
                         ->label('Gallery Images')
                         ->helperText('Upload multiple images for the gallery.'),
+                // Group::make([
+                //     // RichEditor::make('description')
+                //     //     ->required()
+                //     //     ->maxLength(65535),
+                //     Tabs::make('Translations')
+                //     ->tabs([
+                //         Tabs\Tab::make('French')
+                //             ->schema([
+                //                 RichEditor::make('description')
+                //                     ->label('Description')
+                //                     ->required()
+                //                     ->maxLength(65535),
+                //             ]),
+                //         Tabs\Tab::make('English')
+                //             ->schema([
+                //                 RichEditor::make('translations.en.description')
+                //                     ->label('Description (EN)')
+                //                     ->required()
+                //                     ->maxLength(65535),
+                //             ]),
 
-                    RichEditor::make('description')
-                        ->required()
-                        ->maxLength(65535),
-                    RichEditor::make('overview')
-                        ->required()
-                        ->maxLength(65535),
+                //         Tabs\Tab::make('Spanish')
+                //             ->schema([
+                //                 RichEditor::make('translations.es.description')
+                //                     ->label('Description (ES)')
+                //                     ->required()
+                //                     ->maxLength(65535),
+                //             ]),
+                //     ]),
+                //     ]),
+
+                    // RichEditor::make('overview')
+                    //     ->required()
+                    //     ->maxLength(65535),
+
+                    // Group::make([
+                    // Tabs::make('Translations')
+                    // ->tabs([
+                    //     Tabs\Tab::make('French')
+                    //         ->schema([
+                    //             RichEditor::make('overview')
+                    //                 ->label('Overview')
+                    //                 ->required()
+                    //                 ->maxLength(65535),
+                    //         ]),
+                    //     Tabs\Tab::make('English')
+                    //         ->schema([
+                    //             RichEditor::make('translations.en.overview')
+                    //                 ->label('Overview (EN)')
+                    //                 ->required()
+                    //                 ->maxLength(65535),
+                    //         ]),
+
+                    //     Tabs\Tab::make('Spanish')
+                    //         ->schema([
+                    //             RichEditor::make('translations.es.overview')
+                    //                 ->label('Overview (ES)')
+                    //                 ->required()
+                    //                 ->maxLength(65535),
+                    //         ]),
+                    // ]),
+                    // ]),
+
+
                     Select::make('start_location_id')
                         ->relationship('startLocation', 'name')
                         ->required()
@@ -152,34 +291,67 @@ class TourResource extends Resource
                                         }
                                     };
                                 }),
-                            TextInput::make('price')
+                            TextInput::make('adult_price')
+                                ->label('Adult Price')
                                 ->numeric()
                                 ->prefix('$')
                                 ->step(0.01)
                                 ->required(),
+                            TextInput::make('kids_price')
+                                ->label('Kids Price')
+                                ->numeric()
+                                ->prefix('$')
+                                ->step(0.01),
                         ])
                         ->grid(2)
                         ->columnSpan(2)
-                        ->columns(3)
+                        ->columns(2)
                         ->label('Prices for Different Groups')
                         ->createItemButtonLabel('Add Price Group'),
 
                     // create a repeater for tour days
                     Repeater::make('tourDays') // This should match your relation method name
-                        ->relationship('tourDays')
+                        // ->relationship('tourDays')
                         ->schema([
                             TextInput::make('day_number')
                                 ->numeric()
                                 ->required(),
-                            TextInput::make('title')
-                                ->required(),
-                            RichEditor::make('content')
-                                ->label('Description')
-                                ->required()
-                                ->maxLength(65535),
+                            Tabs::make('Translations_day')
+                                 ->tabs([
+                                    Tabs\Tab::make('French')
+                                        ->schema([
+                                            TextInput::make('title')
+                                                ->required(),
+                                            RichEditor::make('content')
+                                                ->label('Description')
+                                                ->required()
+                                                ->maxLength(65535),
+                                        ]),
+                                    Tabs\Tab::make('English')
+                                        ->schema([
+                                            TextInput::make('translations_day.en.title')
+                                                ->label('Title (EN)')
+                                                ->required(),
+                                            RichEditor::make('translations_day.en.content')
+                                                ->label('Description (EN)')
+                                                ->required()
+                                                ->maxLength(65535),
+                                        ]),
+                                    Tabs\Tab::make('Spanish')
+                                        ->schema([
+                                            TextInput::make('translations_day.es.title')
+                                                ->label('Title (ES)')
+                                                ->required(),
+                                            RichEditor::make('translations_day.es.content')
+                                                ->label('Description (ES)')
+                                                ->required()
+                                                ->maxLength(65535),
+                                        ]),
+                            ]),
                         ])
                         ->grid(2)
                         ->columnSpan(2)
+                        ->columnSpanFull()
                         // ->columns(3)
                         ->label('Tour Days')
                         ->createItemButtonLabel('Add Tour Day Details'),
@@ -223,6 +395,7 @@ class TourResource extends Resource
                 TextColumn::make('difficulties')
                     ->label('Difficulties')
                     ->sortable()
+                    ->formatStateUsing(fn ($state) => ucfirst(strtolower($state)))
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->label('Created At')

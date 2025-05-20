@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TourResource\Pages;
 
 use Filament\Actions;
+use App\Models\TranslateLanguage;
 use App\Filament\Resources\TourResource;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -48,6 +49,48 @@ class CreateTour extends CreateRecord
             foreach ($this->excludeIds as $id) {
                 $tour->excludes()->attach($id, ['type' => 'exclude']);
             }
+
+            // Store tour translations
+            $translations = $this->form->getState()['translations'];
+
+            foreach ($translations as $lang => $fields) {
+                TranslateLanguage::create([
+                    'tour_id' => $this->record->id,
+                    'lang_code' => $lang,
+                    'name' => $fields['name'],
+                    'description' => $fields['description'],
+                    'overview' => $fields['overview'],
+                ]);
+            }
+
+            $formTourDays = $this->form->getState()['tourDays'] ?? [];
+
+
+         // Store tour day and translations
+        foreach ($formTourDays as $tourDayData) {
+            // Create Tour Day (French as default)
+            $tourDay = $tour->tourDays()->create([
+                'day_number' => $tourDayData['day_number'],
+                'title'      => $tourDayData['title'],
+                'content'    => $tourDayData['content'],
+            ]);
+
+            // Translations (English, Spanish)
+        if ($tourDay && isset($tourDayData['translations_day'])) {
+            foreach ($tourDayData['translations_day'] ?? [] as $lang => $transData) {
+                TranslateLanguage::create([
+                    'tour_day_id' => $tourDay->id,
+                    'lang_code'   => $lang,
+                    'title'       => $transData['title'] ,
+                    'content'     => $transData['content'],
+                ]);
+            }
+        }
+        }
+
+
+
+
             Notification::make()
                 ->title('Tour created successfully!')
                 ->success()

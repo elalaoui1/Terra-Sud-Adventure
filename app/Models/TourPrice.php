@@ -11,10 +11,11 @@ class TourPrice extends Model
         'tour_id',
         'min_people',
         'max_people',
-        'price',
+        'adult_price',
+        'kids_price',
     ];
     protected $table = 'tour_prices';
-    
+
     public function tour()
     {
         return $this->belongsTo(Tour::class);

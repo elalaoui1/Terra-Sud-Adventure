@@ -19,4 +19,14 @@ class TourDay extends Model
         return $this->belongsTo(Tour::class);
     }
 
+    public function translations()
+    {
+        return $this->hasMany(TranslateLanguage::class);
+    }
+
+    public function translation($lang = 'en')
+    {
+        return $this->hasOne(TranslateLanguage::class)
+                    ->where('lang_code', $lang);
+    }
 }

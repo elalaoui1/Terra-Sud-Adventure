@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('tour_id')->constrained('tours')->onDelete('cascade');
             $table->integer('min_people');
             $table->integer('max_people');
-            $table->decimal('price', 10, 2);
+            $table->decimal('adult_price', 10, 2);
+            $table->decimal('kids_price', 10, 2)->nullable();
             $table->timestamps();
         });
     }

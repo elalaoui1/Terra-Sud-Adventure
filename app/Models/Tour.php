@@ -70,6 +70,16 @@ class Tour extends Model
     }
 
 
+    public function translations()
+    {
+        return $this->hasMany(TranslateLanguage::class);
+    }
+
+    public function translation($lang = 'en')
+    {
+        return $this->hasOne(TranslateLanguage::class)->where('lang_code', $lang);
+    }
+
 
     protected static function booted()
 {
@@ -77,7 +87,7 @@ class Tour extends Model
         if (empty($model->slug)) {
             $slugBase = Str::slug($model->name);
             $randomPart = Str::uuid()->toString(); // يعطي UUID كامل
-            $shortUuid = substr($randomPart, 0, 8); // نأخذ جزء قصير فقط
+            $shortUuid = substr($randomPart, 0, 8);
 
             $model->slug = $slugBase . '-' . $shortUuid;
 

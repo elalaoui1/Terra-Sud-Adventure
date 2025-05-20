@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('translate_langauges', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tour_id')->constrained()->onDelete('cascade');
-            $table->string('lang_code');
-            $table->text('description');
-            $table->text('overview');
-            $table->string('title');
-            $table->text('content');
+            $table->foreignId('tour_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('tour_day_id')->nullable()->constrained()->onDelete('cascade');
+            $table->string('name')->nullable();
+            $table->enum('lang_code',['en','es']);
+            $table->text('description')->nullable();
+            $table->text('overview')->nullable();
+            $table->string('title')->nullable();
+            $table->text('content')->nullable();
             $table->timestamps();
         });
     }
