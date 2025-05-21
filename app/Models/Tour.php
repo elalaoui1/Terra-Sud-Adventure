@@ -80,7 +80,14 @@ class Tour extends Model
         return $this->hasOne(TranslateLanguage::class)->where('lang_code', $lang);
     }
 
+    // tour request
+    public function tourRequests()
+    {
+        return $this->hasMany(TourRequest::class);
+    }
 
+
+    // create a slug from the name
     protected static function booted()
 {
      static::creating(function ($model) {

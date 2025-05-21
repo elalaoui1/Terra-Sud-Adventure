@@ -47,14 +47,7 @@ class TourResource extends Resource
         return $form
             ->schema([
                 //
-                    // TextInput::make('name')
-                    //     ->required()
-                    //     ->maxLength(255)
-                    //     ->required()
-                    //     ->live(onBlur: true) // 👈 triggers updates when leaving the field
-                    //     ->afterStateUpdated(function (callable $set, $state) {
-                    //         $set('slug', Str::slug($state));
-                    //     }),
+
                     Group::make([
                     Tabs::make('Translations')
                     ->tabs([
@@ -64,7 +57,7 @@ class TourResource extends Resource
                                     ->required()
                                     ->maxLength(255)
                                     ->required()
-                                    ->live(onBlur: true) // 👈 triggers updates when leaving the field
+                                    ->live(onBlur: true)
                                     ->afterStateUpdated(function (callable $set, $state) {
                                         $set('slug', Str::slug($state));
                                     }),
@@ -181,68 +174,6 @@ class TourResource extends Resource
                         ->maxSize(2048)
                         ->label('Gallery Images')
                         ->helperText('Upload multiple images for the gallery.'),
-                // Group::make([
-                //     // RichEditor::make('description')
-                //     //     ->required()
-                //     //     ->maxLength(65535),
-                //     Tabs::make('Translations')
-                //     ->tabs([
-                //         Tabs\Tab::make('French')
-                //             ->schema([
-                //                 RichEditor::make('description')
-                //                     ->label('Description')
-                //                     ->required()
-                //                     ->maxLength(65535),
-                //             ]),
-                //         Tabs\Tab::make('English')
-                //             ->schema([
-                //                 RichEditor::make('translations.en.description')
-                //                     ->label('Description (EN)')
-                //                     ->required()
-                //                     ->maxLength(65535),
-                //             ]),
-
-                //         Tabs\Tab::make('Spanish')
-                //             ->schema([
-                //                 RichEditor::make('translations.es.description')
-                //                     ->label('Description (ES)')
-                //                     ->required()
-                //                     ->maxLength(65535),
-                //             ]),
-                //     ]),
-                //     ]),
-
-                    // RichEditor::make('overview')
-                    //     ->required()
-                    //     ->maxLength(65535),
-
-                    // Group::make([
-                    // Tabs::make('Translations')
-                    // ->tabs([
-                    //     Tabs\Tab::make('French')
-                    //         ->schema([
-                    //             RichEditor::make('overview')
-                    //                 ->label('Overview')
-                    //                 ->required()
-                    //                 ->maxLength(65535),
-                    //         ]),
-                    //     Tabs\Tab::make('English')
-                    //         ->schema([
-                    //             RichEditor::make('translations.en.overview')
-                    //                 ->label('Overview (EN)')
-                    //                 ->required()
-                    //                 ->maxLength(65535),
-                    //         ]),
-
-                    //     Tabs\Tab::make('Spanish')
-                    //         ->schema([
-                    //             RichEditor::make('translations.es.overview')
-                    //                 ->label('Overview (ES)')
-                    //                 ->required()
-                    //                 ->maxLength(65535),
-                    //         ]),
-                    // ]),
-                    // ]),
 
 
                     Select::make('start_location_id')
@@ -272,7 +203,7 @@ class TourResource extends Resource
 
 
                     // create a repeater for tour prices
-                    Repeater::make('tourPrices') // This should match your relation method name
+                    Repeater::make('tourPrices')
                         ->relationship('tourPrices')
                         ->schema([
                             TextInput::make('min_people')
@@ -287,7 +218,7 @@ class TourResource extends Resource
                                     return function ($attribute, $value, $fail) use ($get) {
                                         $min = $get('min_people');
                                         if ($value <= $min) {
-                                            $fail('Max people must be greater than Min people.');
+                                            $fail('Max must be greater than Min.');
                                         }
                                     };
                                 }),
@@ -310,8 +241,8 @@ class TourResource extends Resource
                         ->createItemButtonLabel('Add Price Group'),
 
                     // create a repeater for tour days
-                    Repeater::make('tourDays') // This should match your relation method name
-                        // ->relationship('tourDays')
+                    Repeater::make('tourDays')
+                        ->reorderable(false)
                         ->schema([
                             TextInput::make('day_number')
                                 ->numeric()
@@ -354,7 +285,7 @@ class TourResource extends Resource
                         ->columnSpanFull()
                         // ->columns(3)
                         ->label('Tour Days')
-                        ->createItemButtonLabel('Add Tour Day Details'),
+                        ->createItemButtonLabel('Add Tour Day'),
 
                 ]);
         }
@@ -366,10 +297,6 @@ class TourResource extends Resource
                 //
                ImageColumn::make('main_image')
                     ->label('Main Image')
-                    // ->sortable()
-                    // ->searchable()
-                    // ->square()
-
                     ->height(50)
                     ->width(80)
                      ->extraImgAttributes([
@@ -397,18 +324,18 @@ class TourResource extends Resource
                     ->sortable()
                     ->formatStateUsing(fn ($state) => ucfirst(strtolower($state)))
                     ->searchable(),
-                TextColumn::make('created_at')
-                    ->label('Created At')
-                    ->dateTime()
-                    ->sortable()
-                    ->searchable(),
                 ToggleColumn::make('is_highlited')
                     ->label('Highlighted')
                     ->sortable()
                     ->toggleable()
                     // ->onColor('success')
                     // ->offColor('danger')
-                    ->tooltip(fn ($record) => $record->is_highlited ? 'Click to disable highlight' : 'Click to highlight')
+                    ->tooltip(fn ($record) => $record->is_highlited ? 'Click to disable highlight' : 'Click to highlight'),
+                TextColumn::make('created_at')
+                    ->label('Created At')
+                    ->date()
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 //

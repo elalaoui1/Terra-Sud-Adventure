@@ -114,6 +114,25 @@ class EditTour extends EditRecord
                     ]);
             }
 
+            // remove days that are not in the request
+            $tourDayIdsFromRequest = collect($data['tourDays'] ?? [])
+                ->pluck('id')
+                ->filter() // remove nulls (new ones have no id)
+                ->toArray();
+
+            // Get existing tour day IDs from DB
+            $existingTourDayIds = $tour->tourDays->pluck('id')->toArray();
+
+            // Detect deleted tour days
+            $toDelete = array_diff($existingTourDayIds, $tourDayIdsFromRequest);
+
+            // Delete removed tour days and their translations
+            TourDay::whereIn('id', $toDelete)->each(function ($day) {
+                $day->delete();
+                $day->translations()->delete(); // delete related translations
+            });
+
+
 
              // Update or create tourDays and translations
              foreach ($data['tourDays'] ?? [] as $tourDayData) {

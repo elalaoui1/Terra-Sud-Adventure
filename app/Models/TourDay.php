@@ -21,7 +21,7 @@ class TourDay extends Model
 
     public function translations()
     {
-        return $this->hasMany(TranslateLanguage::class);
+        return $this->hasMany(TranslateLanguage::class,'tour_day_id');
     }
 
     public function translation($lang = 'en')
