@@ -22,10 +22,10 @@
             </h2>
             @if($tourData)
                 <p class="text-sm text-gray-400"><strong>Duration:</strong> {{ $tourData->duration_days }} days</p>
-                <p class="text-gray-700">{!! $tourData->description !!}</p>
+                <p class="text-gray-400">{{ \Illuminate\Support\Str::limit(strip_tags($tourData->description), 150) }}</p>
 
                 <div class="grid grid-cols-2 gap-4 text-sm text-gray-400 mt-2">
-                    <div><strong>Type:</strong> {{ $tourData->tourType->name ?? '-' }}</div>
+                    <div><strong>From:</strong> {{ $tourData->startLocation->name }} - <strong>To:</strong> {{ $tourData->endLocation->name }}</div>
                     <div><strong>Activity:</strong> {{ ucfirst($tourData->section->name) }}</div>
                 </div>
             @endif

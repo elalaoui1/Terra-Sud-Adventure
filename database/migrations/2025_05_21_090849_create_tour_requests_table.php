@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('from_city')->nullable(); // this is when the user need to start the tour from (morocco)
             $table->string('to_city')->nullable(); // this is when the user need to end the tour (morocco)
             $table->text('message')->nullable();
-            $table->enum('status', ['pending', 'approved', 'done', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'done', 'cancelled'])->default('pending');
             $table->enum('payment_status', ['unpaid', 'paid'])->default('unpaid');
             $table->timestamps();
         });

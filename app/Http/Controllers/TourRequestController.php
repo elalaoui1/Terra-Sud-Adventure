@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\TourRequest;
 use Illuminate\Http\Request;
+use App\Mail\TourRequestReceived;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TourRequestClientNotification;
 
 class TourRequestController extends Controller
 {
@@ -27,7 +30,7 @@ class TourRequestController extends Controller
         'message'     => 'nullable|string',
     ]);
 
-    // ✅ Format dates to 'Y-m-d'
+    //Format dates to 'Y-m-d'
     if (isset($data['date_from'])) {
         $data['date_from'] = \Carbon\Carbon::parse($data['date_from'])->format('Y-m-d');
     }
@@ -40,6 +43,13 @@ class TourRequestController extends Controller
     $data['payment_status'] = 'unpaid';
 
     $tourRequest = TourRequest::create($data);
+
+    // Send email to your company
+    Mail::to(config('mail.company_contact'))->send(new TourRequestReceived($tourRequest));
+
+    // Send email to the client
+    Mail::to($tourRequest->email)->send(new TourRequestClientNotification($tourRequest));
+
 
     return response()->json([
         'message' => 'Request sent successfully!',

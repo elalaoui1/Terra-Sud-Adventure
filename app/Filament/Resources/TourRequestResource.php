@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use Mail;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\TourRequest;
 use Filament\Resources\Resource;
+use App\Mail\TourRequestCanceled;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\SelectColumn;
@@ -42,10 +44,16 @@ class TourRequestResource extends Resource
                     TextColumn::make('name')
                         ->searchable()
                         ->sortable(),
-                    TextColumn::make('email'),
-                    TextColumn::make('phone'),
+                    TextColumn::make('email')
+                        ->searchable()
+                        ->sortable(),
+                    TextColumn::make('phone')
+                        ->searchable()
+                        ->sortable(),
                     TextColumn::make('type')
                         ->badge()
+                        ->searchable()
+                        ->sortable()
                         ->formatStateUsing(fn ($state) => ucfirst($state)) // Optional: Capitalize
                         ->color(fn ($state) => match ($state) {
                             'custom' => 'info', // You can use Filament's built-in colors like 'warning', 'success', 'danger', etc.
@@ -53,87 +61,59 @@ class TourRequestResource extends Resource
                         }),
 
                     TextColumn::make('adult_people')
+                        ->searchable()
+                        ->sortable()
                         ->label('Adults'),
                     TextColumn::make('kids_people')
+                        ->searchable()
+                        ->sortable()
                         ->label('Kids'),
 
                     TextColumn::make('date_from')
                         ->date()
+                        ->searchable()
+                        ->sortable()
                         ->label('Date From')
                         ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('Y-m-d') : '-'),
                     TextColumn::make('date_to')
                         ->date()
+                        ->searchable()
+                        ->sortable()
                         ->label('Date To')
                         ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->format('Y-m-d') : '-'),
-                    // Tour image (clickable)
-                    ImageColumn::make('tour.main_image')
+
+                   ImageColumn::make('tour.main_image')
                         ->label('Tour Image')
                         ->height(50)
                         ->width(70)
                         ->placeholder('________')
                         ->extraImgAttributes(['style' => 'object-fit: cover; border-radius: 10px;']),
 
-                    // Tour name (clickable text)
+
                     TextColumn::make('tour.name')
                         ->label('Tour Name')
-                        // ->formatStateUsing(fn ($state) => $state ?? '-')
+                        ->searchable()
+                        ->sortable()
                         ->placeholder('________')
                         ->limit(35)
                         ->searchable(),
 
                     TextColumn::make('from_city')
                         ->label('From City')
-                        // ->formatStateUsing(fn ($state) => $state ?: '-')
+                        ->searchable()
+                        ->sortable()
                         ->placeholder('________'),
                     TextColumn::make('to_city')
                         ->label('To City')
-                        // ->formatStateUsing(fn ($state) => $state ?: '-')
+                        ->searchable()
+                        ->sortable()
                         ->placeholder('________'),
                     TextColumn::make('country')
                         ->label('Client Country')
-                        // ->formatStateUsing(fn ($state) => $state ?: '-')
+                        ->searchable()
+                        ->sortable()
                         ->placeholder('________'),
 
-                    SelectColumn::make('status')
-                        ->label('Status')
-                        ->options([
-                            'pending' => 'Pending',
-                            'approved' => 'Approved',
-                            'done' => 'Done',
-                            'cancelled' => 'Cancelled',
-                        ])
-                        ->sortable()
-                        ->searchable()
-                        ->disablePlaceholderSelection(),
-                    // SelectColumn::make('status')
-                    //     ->label('Status')
-                    //     ->options([
-                    //         'pending' => 'Pending',
-                    //         'approved' => 'Approved',
-                    //         'done' => 'Done',
-                    //         'cancelled' => 'Cancelled',
-                    //     ])
-                    //     ->disablePlaceholderSelection()
-                    //     ->beforeStateUpdated(function ($state, $record, $livewire, $set) {
-                    //         // Save current and new status in JS
-                    //         $livewire->dispatchBrowserEvent('confirm-status-update', [
-                    //             'newStatus' => $state,
-                    //             'recordId' => $record->id,
-                    //             'currentStatus' => $record->status,
-                    //         ]);
-
-                    //         // Block the change until confirmation
-                    //         return false;
-                    //     }),
-                    SelectColumn::make('payment_status')
-                        ->label('Payment Status')
-                        ->options([
-                            'unpaid' => 'Unpaid',
-                            'paid' => 'Paid',
-                        ])
-                        ->sortable()
-                        ->searchable()
-                        ->disablePlaceholderSelection(),
                     TextColumn::make('created_at')
                         ->date()
                         ->label('Submitted At')
@@ -160,35 +140,71 @@ class TourRequestResource extends Resource
                     ->label('Status')
                     ->options([
                         'pending' => 'Pending',
-                        'approved' => 'Approved',
                         'done' => 'Done',
                         'cancelled' => 'Cancelled',
                     ])
                     ->placeholder('All'),
                         ])
             ->actions([
-                    // Tables\Actions\Action::make('changeStatus')
-                    //     ->label('Change Status')
-                    //     ->icon('heroicon-o-arrow-path')
-                    //     ->form([
-                    //         Forms\Components\Select::make('status')
-                    //             ->label('New Status')
-                    //             ->options([
-                    //                 'pending' => 'Pending',
-                    //                 'approved' => 'Approved',
-                    //                 'done' => 'Done',
-                    //                 'cancelled' => 'Cancelled',
-                    //             ])
-                    //             ->required(),
-                    //     ])
-                    //     ->action(function ($record, array $data) {
-                    //         $record->status = $data['status'];
-                    //         $record->save();
-                    //     })
-                    //     ->requiresConfirmation()
-                    //     ->modalHeading('Change Status')
-                    //     ->modalSubmitActionLabel('Confirm')
-                    //     ->color('warning'),
+                // change the status with confirmation
+                    Tables\Actions\Action::make('changeStatus')
+                        ->label(fn ($record) => 'Status: ' . ucfirst($record->status))
+                        ->icon('heroicon-o-arrow-path')
+                        ->form([
+                            Forms\Components\Select::make('status')
+                                ->label('New Status')
+                                ->options([
+                                    'pending' => 'Pending',
+                                    'done' => 'Done',
+                                    'cancelled' => 'Cancelled',
+                                ])
+                                ->default(fn ($record) => $record->status)
+                                ->required(),
+                        ])
+                        ->action(function ($record, array $data) {
+                            $record->status = $data['status'];
+                            $record->save();
+                             if ($data['status'] === 'cancelled') {
+                                    Mail::to($record->email)->send(new TourRequestCanceled($record));
+                                }
+                        })
+                        ->requiresConfirmation()
+                        ->modalHeading('Change Status')
+                        ->modalSubmitActionLabel('Confirm')
+                        ->disabled(fn ($record) => $record->payment_status === 'paid')
+                        ->color(fn ($record) => match ($record->status) {
+                            'pending' => 'gray',
+                            'done' => 'success',
+                            'cancelled' => 'danger',
+                        }),
+
+                // change payment status with confirmation
+                Tables\Actions\Action::make('payment_status')
+                        ->label(fn ($record) => __('Payment: ') . ucfirst($record->payment_status))
+                        ->icon('heroicon-o-arrow-path')
+                        ->form([
+                            Forms\Components\Select::make('payment_status')
+                                ->label('Payment Status')
+                                ->options([
+                                    'unpaid' => 'Unpaid',
+                                    'paid' => 'Paid',
+                                ])
+                                ->default(fn ($record) => $record->payment_status)
+                                ->required(),
+                        ])
+                        ->action(function ($record, array $data) {
+                            $record->payment_status = $data['payment_status'];
+                            $record->save();
+                        })
+                        ->requiresConfirmation()
+                        ->modalHeading('Change Payment Status')
+                        ->modalSubmitActionLabel('Confirm')
+                        ->disabled(fn ($record) => $record->status !== 'done' || $record->payment_status === 'paid')
+                        ->color(fn ($record) => match ($record->payment_status) {
+                            'unpaid' => 'primary',
+                            'paid' => 'success',
+                        }),
+
                 // Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('Preview')
                     ->label('Preview')

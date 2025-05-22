@@ -115,4 +115,7 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+
+    // Company email
+    'company_contact' => env('COMPANY_CONTACT_EMAIL', 'fallback@example.com'),
 ];
