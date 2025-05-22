@@ -19,7 +19,13 @@ class ExInCludeResource extends Resource
 {
     protected static ?string $model = ExInClude::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
+
+    protected static ?int $navigationSort = 3;
+    public static function getNavigationLabel(): string
+    {
+        return 'Exclusions/Inclusions';
+    }
 
     public static function form(Form $form): Form
     {
