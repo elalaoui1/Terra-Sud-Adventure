@@ -1,20 +1,20 @@
 <?php
 
-use App\Models\TourRequest;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('frontend.home');
+// });
+Route::get('/', [HomeController::class , 'index'])->name('home');
 
-
-Route::get('/emaill', function () {
-    // Get an existing TourRequest from DB (adjust ID as needed)
-    $tourRequest = TourRequest::with(['tour.startLocation', 'tour.endLocation', 'tour.section'])->find(1); // Change 1 to a valid ID
-    // dd($tourRequest);
-    if (!$tourRequest) {
-        abort(404, "TourRequest not found.");
+Route::get('/lang/{locale}', function ($locale) {
+    if (! in_array($locale, ['en', 'fr', 'es'])) {
+        abort(400);
     }
+    session(['locale' => $locale]);
+    return redirect()->back();
+})->name('lang.switch');
 
-    return view('emails.tour-request-received', compact('tourRequest'));
-});
+
+
