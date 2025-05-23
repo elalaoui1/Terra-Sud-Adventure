@@ -1,14 +1,14 @@
  <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-400 pt-16 pb-8">
+    <footer class="bg-black/95 text-gray-400 pt-16 pb-8">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           <div class="lg:col-span-2">
-            <a
-              href="#"
-              class="text-2xl font-['Pacifico'] text-white mb-4 inline-block"
-              >logo</a
-            >
-            <p class="mb-4">
+            <a href="#" class="text-2xl font-['Pacifico'] text-gray-800 ">
+              <img src="{{ asset('logo_mini.png') }}"
+                    class="object-cover w-[130px] h-auto"
+                    alt="Tour image">
+          </a>
+            <p class="mb-4 mt-4">
               Discover the world's most breathtaking destinations with our
               expert-guided tours and personalized travel experiences.
             </p>
@@ -137,7 +137,7 @@
         <div
           class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center"
         >
-          <p>© 2025 Travel Explorer. All rights reserved.</p>
+          <p>© {{date('Y')}} <span class="text-[#FF681A]"> Terra Sud Adventures </span>. All rights reserved.</p>
           <div class="flex items-center space-x-4 mt-4 md:mt-0">
             <i class="ri-visa-fill text-2xl"></i>
             <i class="ri-mastercard-fill text-2xl"></i>
