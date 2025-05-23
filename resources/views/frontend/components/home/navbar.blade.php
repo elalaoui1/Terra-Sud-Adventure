@@ -26,8 +26,8 @@
           </a>
         </div>
         <nav class="hidden md:flex space-x-8">
-          <a href="#" class="text-white hover:text-[#FF681A]">{{ __('navbar.home') }}</a>
-          <a href="#" class="text-white hover:text-[#FF681A]">{{ __('navbar.tours') }}</a>
+          <a href="{{route('home')}}" class="text-white hover:text-[#FF681A]">{{ __('navbar.home') }}</a>
+          <a href="{{route('TreksHikes')}}" class="text-white hover:text-[#FF681A]">{{ __('navbar.tours') }}</a>
           <a href="#" class="text-white hover:text-[#FF681A]">{{ __('navbar.private_tours') }}</a>
           <a href="#" class="text-white hover:text-[#FF681A]">{{ __('navbar.excursions') }}</a>
           <a href="#" class="text-white hover:text-[#FF681A]">{{ __('navbar.events') }}</a>
@@ -35,31 +35,38 @@
         </nav>
         <div class="hidden md:flex items-center space-x-2">
             <div class="relative group">
-  <!-- Trigger Button -->
-  <button class="flex items-center space-x-1 text-sm text-white hover:text-[#FF681A] focus:outline-none">
-    <span>
-      @php
-        $flag = ['en' => '🇬🇧', 'fr' => '🇫🇷', 'es' => '🇪🇸'][app()->getLocale()] ?? '🌐';
-      @endphp
-      {{ $flag }}
-    </span>
-    <span class="uppercase">{{ app()->getLocale() }}</span>
-    <svg class="w-3 h-3 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
+                <!-- Trigger Button -->
+                <button class="flex items-center space-x-1 text-sm text-white hover:text-[#FF681A] focus:outline-none">
+                    <span>
+                    @php
+                        $flag = ['en' => '🇬🇧', 'fr' => '🇫🇷', 'es' => '🇪🇸'][app()->getLocale()] ?? '🌐';
+                    @endphp
+                    {{ $flag }}
+                    </span>
+                    <span class="uppercase">{{ app()->getLocale() }}</span>
+                    <svg class="w-3 h-3 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
 
-  <!-- Dropdown -->
-  <div
-    class="absolute left-0 bg-white shadow-lg rounded-md border border-gray-100 hidden group-hover:block z-50"
-    onmouseenter="this.classList.add('block')"
-    onmouseleave="this.classList.remove('block')"
-  >
-  <a href="{{ route('lang.switch', 'fr') }}" class="block px-4 py-2 hover:bg-gray-100 rounded-md">🇫🇷 Français</a>
-    <a href="{{ route('lang.switch', 'en') }}" class="block px-4 py-2 hover:bg-gray-100 rounded-md">🇬🇧 English</a>
-    <a href="{{ route('lang.switch', 'es') }}" class="block px-4 py-2 hover:bg-gray-100 rounded-md">🇪🇸 Español</a>
-  </div>
-</div>
+                {{-- Desktop Dropdown --}}
+                <div
+                    class="absolute right-[-1rem] w-[150px] bg-white shadow-lg rounded-md border border-gray-100 hidden group-hover:block z-50"
+                    onmouseenter="this.classList.add('block')"
+                    onmouseleave="this.classList.remove('block')"
+                >
+                    @php $locale = app()->getLocale(); @endphp
+                    @if($locale !== 'fr')
+                        <a href="{{ route('lang.switch', 'fr') }}" class="block px-4 py-2 hover:bg-gray-100 rounded-md">🇫🇷 Français</a>
+                    @endif
+                    @if($locale !== 'en')
+                        <a href="{{ route('lang.switch', 'en') }}" class="block px-4 py-2 hover:bg-gray-100 rounded-md">🇬🇧 English</a>
+                    @endif
+                    @if($locale !== 'es')
+                        <a href="{{ route('lang.switch', 'es') }}" class="block px-4 py-2 hover:bg-gray-100 rounded-md">🇪🇸 Español</a>
+                    @endif
+                </div>
+        </div>
 
 
         </div>
@@ -85,15 +92,15 @@
                     alt="Tour image">
           </a>
           <button
-            class="w-10 h-10 flex items-center justify-center"
+            class="w-10 h-10 flex items-center text-white justify-center"
             id="closeButton"
           >
             <i class="ri-close-line text-2xl"></i>
           </button>
         </div>
         <nav class="flex flex-col space-y-6">
-          <a href="#" class="text-white hover:text-[#FF681A] text-lg">{{ __('navbar.home') }}</a>
-          <a href="#" class="text-white hover:text-[#FF681A] text-lg">{{ __('navbar.tours') }}</a>
+          <a href="{{route('home')}}" class="text-white hover:text-[#FF681A] text-lg">{{ __('navbar.home') }}</a>
+          <a href="{{route('TreksHikes')}}" class="text-white hover:text-[#FF681A] text-lg">{{ __('navbar.tours') }}</a>
           <a href="#" class="text-white hover:text-[#FF681A] text-lg">{{ __('navbar.private_tours') }}</a>
           <a href="#" class="text-white hover:text-[#FF681A] text-lg">{{ __('navbar.excursions') }}</a>
           <a href="#" class="text-white hover:text-[#FF681A] text-lg">{{ __('navbar.events') }}</a
@@ -120,11 +127,17 @@
                     x-show="open"
                     @click.away="open = false"
                     x-transition
-                    class="absolute left-0 mt-2 bg-white shadow-lg rounded-md border border-gray-100 z-50"
-                >
-                    <a href="{{ route('lang.switch', 'en') }}" class="block px-4 py-2 hover:bg-gray-100">🇬🇧 English</a>
-                    <a href="{{ route('lang.switch', 'fr') }}" class="block px-4 py-2 hover:bg-gray-100">🇫🇷 Français</a>
-                    <a href="{{ route('lang.switch', 'es') }}" class="block px-4 py-2 hover:bg-gray-100">🇪🇸 Español</a>
+                    class="absolute left-0 mt-2 bg-white shadow-lg rounded-md border border-gray-100 z-50">
+                    @php $locale = app()->getLocale(); @endphp
+                    @if($locale !== 'en')
+                        <a href="{{ route('lang.switch', 'en') }}" class="block px-4 py-2 hover:bg-gray-100">🇬🇧 English</a>
+                    @endif
+                    @if($locale !== 'fr')
+                        <a href="{{ route('lang.switch', 'fr') }}" class="block px-4 py-2 hover:bg-gray-100">🇫🇷 Français</a>
+                    @endif
+                    @if($locale !== 'es')
+                        <a href="{{ route('lang.switch', 'es') }}" class="block px-4 py-2 hover:bg-gray-100">🇪🇸 Español</a>
+                    @endif
                 </div>
                 </div>
 
