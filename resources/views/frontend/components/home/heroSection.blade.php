@@ -42,7 +42,7 @@
             </div>
         </div>
         </div>
-        <div class="md:w-1/2 p-6">
+        <div class="md:w-1/2 py-6">
           <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto shadow-lg">
             <h3 class="text-xl font-semibold mb-4">{{ __('hero.form_title') }}</h3>
             <form>
