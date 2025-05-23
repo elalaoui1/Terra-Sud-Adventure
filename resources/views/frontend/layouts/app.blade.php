@@ -58,7 +58,7 @@
 
 
     {{-- footer --}}
-    {{-- @include('frontend.components.home.footer') --}}
+    @include('frontend.components.home.footer')
 
     {{-- scripts section --}}
     @yield('scripts')
